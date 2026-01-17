@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aot-gpt"
+version = "0.1.0"
+description = "A Verifiable Neural JIT Compiler - AI-optimized Python with formal verification"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Ayush Singh" }
+]
+keywords = ["compiler", "jit", "llvm", "optimization", "ai", "verification", "z3"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Compilers",
+]
+
+dependencies = [
+    "numba>=0.59.0",
+    "llvmlite>=0.42.0",
+    "z3-solver>=4.12.0",
+    "openai>=1.0.0",
+    "langchain>=0.1.0",
+    "langchain-openai>=0.0.5",
+    "redis>=5.0.0",
+    "streamlit>=1.30.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+aot-gpt = "aot_gpt.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["aot_gpt"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
