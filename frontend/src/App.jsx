@@ -155,8 +155,8 @@ entry:
           <div className="logo">
             <div className="logo-icon"><Icons.Zap /></div>
             <div className="logo-text">
-              <span className="logo-name">AOT-GPT</span>
-              <span className="logo-tagline">Verifiable Neural JIT Compiler</span>
+              <span className="logo-name">Atlas Compiler</span>
+              <span className="logo-tagline">Verifiable Neural JIT</span>
             </div>
           </div>
           <div className={`status-dot ${backendStatus}`}>

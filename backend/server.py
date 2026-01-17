@@ -18,7 +18,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 app = FastAPI(
-    title="AOT-GPT API",
+    title="Atlas Compiler API",
     description="Verifiable Neural JIT Compiler API",
     version="0.1.0",
 )
