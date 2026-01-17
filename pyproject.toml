@@ -3,27 +3,33 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "atlas"
+name = "atlas-compiler"
 version = "0.1.0"
-description = "A Verifiable Neural JIT Compiler - AI-optimized Python with formal verification"
+description = "Verifiable Neural JIT Compiler - AI-optimized Python with formal verification using GPT + Z3"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Ayush Singh" }
+    { name = "Ayush Singh", email = "ayushsi42@gmail.com" }
 ]
-keywords = ["compiler", "jit", "llvm", "optimization", "ai", "verification", "z3"]
+keywords = [
+    "compiler", "jit", "llvm", "optimization", "ai", "verification", 
+    "z3", "gpt", "neural", "formal-verification", "numba"
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Compilers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
+# Core dependencies - minimal for library use
 dependencies = [
     "numba>=0.59.0",
     "llvmlite>=0.42.0",
@@ -31,13 +37,20 @@ dependencies = [
     "openai>=1.0.0",
     "langchain>=0.1.0",
     "langchain-openai>=0.0.5",
-    "redis>=5.0.0",
-    "streamlit>=1.30.0",
-    "fastapi>=0.109.0",
-    "uvicorn>=0.27.0",
 ]
 
 [project.optional-dependencies]
+# For Redis caching (optional)
+cache = ["redis>=5.0.0"]
+
+# For the web dashboard
+web = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "python-dotenv>=1.0.0",
+]
+
+# For development
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
@@ -45,11 +58,32 @@ dev = [
     "ruff>=0.1.0",
 ]
 
+# All optional dependencies
+all = [
+    "redis>=5.0.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ayushsi42/atlas-compiler"
+Repository = "https://github.com/ayushsi42/atlas-compiler"
+Issues = "https://github.com/ayushsi42/atlas-compiler/issues"
+
 [project.scripts]
 atlas = "atlas.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["atlas"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/atlas",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+]
 
 [tool.black]
 line-length = 100

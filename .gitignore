@@ -1,2 +1,6 @@
 .pytest_cache
 .env
+# Build artifacts
+dist/
+*.egg-info/
+build/
