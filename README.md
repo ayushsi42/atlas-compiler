@@ -126,6 +126,55 @@ pytest tests/ -v  # 21/21 pass
 
 ---
 
+## FAQ
+
+### How is this different from prompting an LLM to optimize my code?
+
+When you ask ChatGPT to optimize code, you get a "trust me" answer—it might be faster, but it might also have bugs. Atlas is different:
+
+| Aspect | LLM-only | Atlas |
+|--------|----------|-------|
+| **Correctness** | Hope it's right | Z3 *proves* mathematical equivalence |
+| **Bugs** | Possible | Rejected if not provably correct |
+| **Counterexamples** | None | Shows exact inputs where optimization fails |
+| **Output** | Python code | Native machine code |
+
+The LLM is **creative** (suggests optimizations), but Z3 is the **judge** (rejects incorrect ones).
+
+### Doesn't the LLM call slow down compilation?
+
+Yes, but the speedup is in **runtime**, not compile time:
+
+| Phase | Python | Atlas |
+|-------|--------|-------|
+| Compile | 0s | ~2s (LLM + verify) |
+| Run 1M times | 500ms | 50ms |
+| **Total** | 500ms | 2050ms for 1M calls |
+
+After ~5M calls, Atlas wins. For hot loops in ML/simulations, the compile cost is negligible.
+
+### Can't I do formal verification with just Python + Z3?
+
+Yes, for simple cases! A basic equivalence check is ~20 lines:
+
+```python
+from z3 import *
+x, y = BitVecs('x y', 32)
+s = Solver()
+s.add((x*2)+(y*2) != (x+y)<<1)
+print("Equivalent" if s.check() == unsat else "Bug found")
+```
+
+But Atlas adds:
+- **LLM-generated optimizations** (you don't have to write them)
+- **CEGAR loop** (auto-refines on verification failure)
+- **Native compilation** (LLVM, not Python bytecode)
+- **11 optimization strategies** for the LLM to choose from
+
+A simple Z3 script is a proof-of-concept; Atlas is an end-to-end compiler.
+
+---
+
 ## License
 
 MIT
