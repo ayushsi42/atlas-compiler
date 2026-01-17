@@ -7,7 +7,7 @@ import pytest
 
 def test_lift_simple_function():
     """Test lifting a simple integer function."""
-    from aot_gpt.lifter import lift_function
+    from atlas.lifter import lift_function
     
     def add(x, y):
         return x + y
@@ -22,7 +22,7 @@ def test_lift_simple_function():
 
 def test_lift_arithmetic_function():
     """Test lifting a function with arithmetic operations."""
-    from aot_gpt.lifter import lift_function
+    from atlas.lifter import lift_function
     
     def double_add(x, y):
         return (x * 2) + (y * 2)
@@ -35,7 +35,7 @@ def test_lift_arithmetic_function():
 
 def test_lift_function_hash_consistency():
     """Test that same function source produces consistent signature."""
-    from aot_gpt.lifter import lift_function
+    from atlas.lifter import lift_function
     
     def func1(x, y):
         return x + y
@@ -52,7 +52,7 @@ def test_lift_function_hash_consistency():
 
 def test_lift_function_source_code():
     """Test that source code is captured."""
-    from aot_gpt.lifter import lift_function
+    from atlas.lifter import lift_function
     
     def documented_func(x, y):
         """This function adds two numbers."""

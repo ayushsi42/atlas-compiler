@@ -1,5 +1,5 @@
 """
-FastAPI Backend for AOT-GPT Dashboard.
+FastAPI Backend for Atlas Dashboard.
 
 Exposes the compiler functionality via REST API with:
 - REAL performance measurements
@@ -79,7 +79,7 @@ def benchmark_function(func, args, iterations=1000):
 
 @app.get("/")
 async def root():
-    return {"message": "AOT-GPT API", "version": "0.1.0", "llm_enabled": bool(os.getenv("OPENAI_API_KEY"))}
+    return {"message": "Atlas API", "version": "0.1.0", "llm_enabled": bool(os.getenv("OPENAI_API_KEY"))}
 
 
 @app.get("/health")
@@ -91,7 +91,7 @@ async def health():
 @app.post("/compile", response_model=CompileResult)
 async def compile_function(request: CompileRequest):
     """
-    Compile a Python function through the AOT-GPT pipeline.
+    Compile a Python function through the Atlas pipeline.
     
     Uses:
     - Numba for type inference and LLVM IR generation
@@ -134,7 +134,7 @@ async def compile_function(request: CompileRequest):
         log("Lifting to LLVM IR...")
         lift_start = time.perf_counter()
         
-        from aot_gpt.lifter import lift_function
+        from atlas.lifter import lift_function
         
         lifted = lift_function(original_func, sample_args=test_args)
         lift_time = (time.perf_counter() - lift_start) * 1000
@@ -154,7 +154,7 @@ async def compile_function(request: CompileRequest):
             llm_start = time.perf_counter()
             
             try:
-                from aot_gpt.neural import NeuralOptimizer
+                from atlas.neural import NeuralOptimizer
                 
                 optimizer = NeuralOptimizer()
                 
@@ -220,7 +220,7 @@ async def compile_function(request: CompileRequest):
         log("Running Z3 Verifier...")
         verify_start = time.perf_counter()
         
-        from aot_gpt.verifier import prove_equivalence
+        from atlas.verifier import prove_equivalence
         
         verify_result = prove_equivalence(original_func, original_func, num_inputs=2)
         verify_time = (time.perf_counter() - verify_start) * 1000
@@ -233,7 +233,7 @@ async def compile_function(request: CompileRequest):
         # Step 7: Get assembly
         log("Generating assembly...")
         try:
-            from aot_gpt.executor.runtime import LLVMCompiler
+            from atlas.executor.runtime import LLVMCompiler
             compiler = LLVMCompiler()
             assembly = compiler.get_assembly(original_ir)
             assembly_lines = len([l for l in assembly.split('\n') if l.strip()])
@@ -288,7 +288,7 @@ async def compile_function(request: CompileRequest):
 async def verify_functions(request: VerifyRequest):
     """Verify equivalence of two functions using Z3."""
     try:
-        from aot_gpt.verifier import prove_equivalence
+        from atlas.verifier import prove_equivalence
         
         local_ns = {}
         exec(request.original_code, {"__builtins__": __builtins__}, local_ns)
@@ -321,7 +321,7 @@ async def verify_functions(request: VerifyRequest):
 @app.get("/strategies")
 async def get_strategies():
     """Get available optimization strategies."""
-    from aot_gpt.neural.strategies import get_all_strategies
+    from atlas.neural.strategies import get_all_strategies
     
     strategies = get_all_strategies()
     return [

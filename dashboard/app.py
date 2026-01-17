@@ -1,5 +1,5 @@
 """
-AOT-GPT Dashboard - Streamlit visualization.
+Atlas Dashboard - Streamlit visualization.
 
 Visualizes:
 - Original Python code vs AI-generated assembly
@@ -13,7 +13,7 @@ from typing import Optional
 
 # Page config
 st.set_page_config(
-    page_title="AOT-GPT Dashboard",
+    page_title="Atlas Dashboard",
     page_icon="⚡",
     layout="wide",
 )
@@ -56,7 +56,7 @@ st.markdown("""
 
 
 def main():
-    st.title("⚡ AOT-GPT: Verifiable Neural JIT")
+    st.title("⚡ Atlas: Verifiable Neural JIT")
     st.markdown("*AI-optimized Python with formal verification*")
     
     # Sidebar
@@ -158,7 +158,7 @@ def run_compilation(code: str, verify_enabled: bool, verbose_mode: bool, max_ret
         add_log("Lifting to LLVM IR...", "checking")
         
         try:
-            from aot_gpt.lifter import lift_function
+            from atlas.lifter import lift_function
             lifted = lift_function(func, sample_args=(1, 1))
             add_log("Type inference (int64, int64)", "pass")
             add_log("LLVM IR generation", "pass")
@@ -170,7 +170,7 @@ def run_compilation(code: str, verify_enabled: bool, verbose_mode: bool, max_ret
         add_log("Running Neural Optimizer...", "checking")
         
         try:
-            from aot_gpt.neural import NeuralOptimizer
+            from atlas.neural import NeuralOptimizer
             optimizer = NeuralOptimizer()
             opt_result = optimizer.optimize(lifted.llvm_ir, lifted.signature)
             
@@ -198,7 +198,7 @@ def run_compilation(code: str, verify_enabled: bool, verbose_mode: bool, max_ret
         with optimized_placeholder:
             # Try to get assembly
             try:
-                from aot_gpt.executor.runtime import get_native_assembly
+                from atlas.executor.runtime import get_native_assembly
                 asm = get_native_assembly(optimized_ir)
                 st.code(asm[:2000] + "..." if len(asm) > 2000 else asm, language="asm")
             except Exception:
@@ -246,7 +246,7 @@ def logic_ai_hallucinated(x, y):
         with st.spinner("Running Z3 prover..."):
             try:
                 from z3 import BitVec
-                from aot_gpt.verifier import prove_equivalence
+                from atlas.verifier import prove_equivalence
                 
                 # Define the functions
                 def logic_original(x, y):
@@ -279,7 +279,7 @@ def logic_correct(x, y):
     if st.button("✅ Verify Correct Version"):
         with st.spinner("Running Z3 prover..."):
             try:
-                from aot_gpt.verifier import prove_equivalence
+                from atlas.verifier import prove_equivalence
                 
                 def logic_original(x, y):
                     return (x * 2) + (y * 2)
@@ -300,12 +300,12 @@ def logic_correct(x, y):
 
 def render_about_tab():
     """About section."""
-    st.header("About AOT-GPT")
+    st.header("About Atlas")
     
     st.markdown("""
     ### The Verifiable Neural JIT
     
-    AOT-GPT is a sophisticated compiler optimization system that uses AI to optimize 
+    Atlas is a sophisticated compiler optimization system that uses AI to optimize 
     Python code with **formal verification** to guarantee correctness.
     
     #### Architecture

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aot-gpt"
+name = "atlas"
 version = "0.1.0"
 description = "A Verifiable Neural JIT Compiler - AI-optimized Python with formal verification"
 readme = "README.md"
@@ -46,10 +46,10 @@ dev = [
 ]
 
 [project.scripts]
-aot-gpt = "aot_gpt.cli:main"
+atlas = "atlas.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["aot_gpt"]
+packages = ["atlas"]
 
 [tool.black]
 line-length = 100

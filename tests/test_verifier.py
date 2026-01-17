@@ -8,7 +8,7 @@ from z3 import BitVec
 
 def test_prove_equivalence_identical():
     """Test that identical functions are verified as equivalent."""
-    from aot_gpt.verifier import prove_equivalence
+    from atlas.verifier import prove_equivalence
     
     def func(x, y):
         return x + y
@@ -21,7 +21,7 @@ def test_prove_equivalence_identical():
 
 def test_prove_equivalence_correct_optimization():
     """Test verifying a correct optimization (multiply to shift)."""
-    from aot_gpt.verifier import prove_equivalence
+    from atlas.verifier import prove_equivalence
     
     def original(x, y):
         return (x * 2) + (y * 2)
@@ -36,7 +36,7 @@ def test_prove_equivalence_correct_optimization():
 
 def test_prove_equivalence_buggy_optimization():
     """Test detecting a bug in optimization."""
-    from aot_gpt.verifier import prove_equivalence
+    from atlas.verifier import prove_equivalence
     
     def original(x, y):
         return (x * 2) + (y * 2)
@@ -53,7 +53,7 @@ def test_prove_equivalence_buggy_optimization():
 
 def test_prove_equivalence_distributive():
     """Test distributive property optimization."""
-    from aot_gpt.verifier import prove_equivalence
+    from atlas.verifier import prove_equivalence
     
     def original(x, y):
         return (x * 3) + (y * 3)
@@ -68,7 +68,7 @@ def test_prove_equivalence_distributive():
 
 def test_prove_equivalence_bitwidth():
     """Test verification with different bit widths."""
-    from aot_gpt.verifier import prove_equivalence
+    from atlas.verifier import prove_equivalence
     
     def func(x, y):
         return x + y

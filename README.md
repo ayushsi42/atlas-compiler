@@ -54,9 +54,9 @@ Python → Numba → LLVM IR → GPT Optimization → Z3 Verification → Native
 ## Example
 
 ```python
-import aot_gpt
+import atlas
 
-@aot_gpt.jit
+@atlas.jit
 def double_add(x, y):
     return (x * 2) + (y * 2)
 
@@ -69,14 +69,41 @@ def double_add(x, y):
 
 ---
 
-## Real Performance
+## Features
 
-| Metric | Value |
-|--------|-------|
-| Python | 0.17µs |
-| Compiled | 0.13µs |
-| **Speedup** | **1.2x** |
-| Z3 Verify | 2.9ms |
+### Type Support
+- Scalars: `int32`, `int64`, `float32`, `float64`, `boolean`
+- Arrays: 1D and 2D NumPy arrays
+
+### Optimization Strategies (11 total)
+- Strength reduction: multiply-to-shift, divide-to-shift, modulo-to-bitwise
+- Loop optimizations: unrolling, invariant hoisting
+- Advanced: FMA fusion, branch-to-select, SIMD vectorization
+
+### Module Compilation
+```python
+import atlas
+
+compiled = atlas.module(func1, func2, func3)
+result = compiled['func1'](x, y)
+```
+
+### Safety Verification
+- Equivalence checking
+- Overflow detection
+- Division-by-zero checks
+- Array bounds verification
+- Termination analysis
+
+---
+
+## Benchmarks
+
+```bash
+python3 -m benchmarks.runner --markdown
+```
+
+17 benchmarks covering numerical, reduction, and bitwise operations.
 
 ---
 

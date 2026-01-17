@@ -7,7 +7,7 @@ import pytest
 
 def test_strategies_exist():
     """Test that optimization strategies are defined."""
-    from aot_gpt.neural.strategies import get_all_strategies
+    from atlas.neural.strategies import get_all_strategies
     
     strategies = get_all_strategies()
     
@@ -17,7 +17,7 @@ def test_strategies_exist():
 
 def test_get_strategy_by_name():
     """Test retrieving a strategy by name."""
-    from aot_gpt.neural.strategies import get_strategy
+    from atlas.neural.strategies import get_strategy
     
     strategy = get_strategy("Multiply-to-Shift")
     
@@ -28,7 +28,7 @@ def test_get_strategy_by_name():
 
 def test_get_strategy_case_insensitive():
     """Test that strategy lookup is case insensitive."""
-    from aot_gpt.neural.strategies import get_strategy
+    from atlas.neural.strategies import get_strategy
     
     s1 = get_strategy("Multiply-to-Shift")
     s2 = get_strategy("multiply-to-shift")
@@ -39,7 +39,7 @@ def test_get_strategy_case_insensitive():
 
 def test_strategies_for_pattern():
     """Test finding strategies for a pattern."""
-    from aot_gpt.neural.strategies import get_strategies_for_pattern
+    from atlas.neural.strategies import get_strategies_for_pattern
     
     strategies = get_strategies_for_pattern("multiply")
     
@@ -50,7 +50,7 @@ def test_strategies_for_pattern():
 
 def test_format_strategies():
     """Test formatting strategies for prompts."""
-    from aot_gpt.neural.strategies import format_strategies_for_prompt
+    from atlas.neural.strategies import format_strategies_for_prompt
     
     formatted = format_strategies_for_prompt()
     

@@ -1,0 +1,179 @@
+{
+  "timestamp": "2026-01-17T11:31:36.273554",
+  "total_benchmarks": 17,
+  "passed": 17,
+  "failed": 0,
+  "avg_speedup": 1.0,
+  "results": [
+    {
+      "name": "double_add",
+      "description": "(x*2) + (y*2) -> (x+y)<<1",
+      "python_time_us": 0.05,
+      "compiled_time_us": 0.0495000000228174,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "triple_multiply",
+      "description": "x * y * z",
+      "python_time_us": 0.044,
+      "compiled_time_us": 0.04449160005606245,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "dot_product",
+      "description": "a*c + b*d (2-elem dot)",
+      "python_time_us": 0.05,
+      "compiled_time_us": 0.049770900113799144,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "polynomial_eval",
+      "description": "a*x^2 + b*x + c",
+      "python_time_us": 0.086,
+      "compiled_time_us": 0.08572500009904616,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "power_of_two_mult",
+      "description": "x * 8 -> x << 3",
+      "python_time_us": 0.048,
+      "compiled_time_us": 0.04771250005433103,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "divide_by_power_of_two",
+      "description": "x // 4 -> x >> 2",
+      "python_time_us": 0.043,
+      "compiled_time_us": 0.04266249998181593,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "modulo_power_of_two",
+      "description": "x % 8 -> x & 7",
+      "python_time_us": 0.044,
+      "compiled_time_us": 0.044458400043367874,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "array_sum",
+      "description": "Sum 1..n",
+      "python_time_us": 1.85,
+      "compiled_time_us": 1.8500000000130967,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "array_min",
+      "description": "min(a, b, c)",
+      "python_time_us": 0.042,
+      "compiled_time_us": 0.04214999989926582,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "array_max",
+      "description": "max(a, b, c)",
+      "python_time_us": 0.041,
+      "compiled_time_us": 0.04113340000913013,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "abs_value",
+      "description": "abs(x)",
+      "python_time_us": 0.041,
+      "compiled_time_us": 0.04064170007040957,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "clamp",
+      "description": "clamp(x, lo, hi)",
+      "python_time_us": 0.043,
+      "compiled_time_us": 0.042695900083344895,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "popcount",
+      "description": "Count 1 bits",
+      "python_time_us": 0.993,
+      "compiled_time_us": 0.993324999944889,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "is_power_of_two",
+      "description": "Check power of 2",
+      "python_time_us": 0.055,
+      "compiled_time_us": 0.05462500012072269,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "bit_parity",
+      "description": "XOR all bits",
+      "python_time_us": 0.161,
+      "compiled_time_us": 0.16077500004030298,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "next_power_of_two",
+      "description": "Round to next 2^n",
+      "python_time_us": 0.174,
+      "compiled_time_us": 0.1735208999889437,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    },
+    {
+      "name": "leading_zeros",
+      "description": "Count leading zeros",
+      "python_time_us": 0.27,
+      "compiled_time_us": 0.2696499999728985,
+      "speedup": 1.0,
+      "verified": false,
+      "strategy": null,
+      "error": null
+    }
+  ]
+}

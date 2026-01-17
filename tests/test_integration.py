@@ -1,5 +1,5 @@
 """
-Integration tests for the full AOT-GPT pipeline.
+Integration tests for the full Atlas pipeline.
 """
 
 import pytest
@@ -7,7 +7,7 @@ import pytest
 
 def test_config_defaults():
     """Test that configuration has sensible defaults."""
-    from aot_gpt.config import get_config
+    from atlas.config import get_config
     
     config = get_config()
     
@@ -18,7 +18,7 @@ def test_config_defaults():
 
 def test_cegar_simple_verification():
     """Test CEGAR loop with direct Z3 functions."""
-    from aot_gpt.cegar import CEGARLoop
+    from atlas.cegar import CEGARLoop
     
     def original(x, y):
         return x + y
@@ -37,7 +37,7 @@ def test_cegar_simple_verification():
 
 def test_cegar_detects_bug():
     """Test that CEGAR detects bugs in optimizations."""
-    from aot_gpt.cegar import CEGARLoop, CEGARStatus
+    from atlas.cegar import CEGARLoop, CEGARStatus
     
     def original(x, y):
         return (x * 2) + (y * 2)
@@ -56,7 +56,7 @@ def test_cegar_detects_bug():
 
 def test_symbolic_executor_basic():
     """Test symbolic execution of basic IR patterns."""
-    from aot_gpt.verifier.symbolic import SymbolicExecutor
+    from atlas.verifier.symbolic import SymbolicExecutor
     from z3 import BitVec
     
     executor = SymbolicExecutor(bit_width=32)
@@ -79,9 +79,9 @@ def test_symbolic_executor_basic():
 
 def test_jit_decorator_basic():
     """Test the @jit decorator on a simple function."""
-    import aot_gpt
+    import atlas
     
-    @aot_gpt.jit
+    @atlas.jit
     def add(x, y):
         return x + y
     
@@ -92,9 +92,9 @@ def test_jit_decorator_basic():
 
 def test_jit_decorator_with_verbose():
     """Test the @jit decorator with verbose output."""
-    import aot_gpt
+    import atlas
     
-    @aot_gpt.jit(verbose=True)
+    @atlas.jit(verbose=True)
     def multiply(x, y):
         return x * y
     
@@ -104,10 +104,10 @@ def test_jit_decorator_with_verbose():
 
 def test_get_stats():
     """Test retrieving JIT compilation stats."""
-    import aot_gpt
-    from aot_gpt.decorator import get_stats
+    import atlas
+    from atlas.decorator import get_stats
     
-    @aot_gpt.jit
+    @atlas.jit
     def subtract(x, y):
         return x - y
     
