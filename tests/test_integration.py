@@ -2,7 +2,15 @@
 Integration tests for the full Atlas pipeline.
 """
 
+import os
 import pytest
+
+
+# Skip decorator for tests requiring OpenAI API key
+requires_api_key = pytest.mark.skipif(
+    not os.getenv("OPENAI_API_KEY"),
+    reason="OPENAI_API_KEY required for LLM-powered tests"
+)
 
 
 def test_config_defaults():
@@ -77,6 +85,7 @@ def test_symbolic_executor_basic():
     assert result is not None
 
 
+@requires_api_key
 def test_jit_decorator_basic():
     """Test the @jit decorator on a simple function."""
     import atlas
@@ -90,6 +99,7 @@ def test_jit_decorator_basic():
     assert result == 15
 
 
+@requires_api_key
 def test_jit_decorator_with_verbose():
     """Test the @jit decorator with verbose output."""
     import atlas
@@ -102,6 +112,7 @@ def test_jit_decorator_with_verbose():
     assert result == 12
 
 
+@requires_api_key
 def test_get_stats():
     """Test retrieving JIT compilation stats."""
     import atlas

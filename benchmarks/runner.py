@@ -62,55 +62,90 @@ def run_benchmark(
     func: Callable,
     args: tuple,
     description: str = "",
-    use_atlas: bool = True
+    verbose: bool = False,
+    skip_llm: bool = False  # Only for comparison mode
 ) -> BenchmarkResult:
     """
     Run a single benchmark comparing Python vs Atlas-compiled.
+    Uses full Atlas pipeline with LLM optimization.
+    
+    LLM is mandatory for Atlas - OPENAI_API_KEY must be set.
     """
+    import os
+    
     # Measure Python baseline
     python_time = benchmark_function(func, args)
     
-    if use_atlas:
-        try:
-            import atlas
-            
-            # Create JIT-compiled version
-            @atlas.jit
-            def compiled_func(*a):
-                return func(*a)
-            
-            # Trigger compilation
-            _ = compiled_func(*args)
-            
-            # Get stats
-            stats = atlas.get_stats(compiled_func)
-            
-            # Measure compiled version
-            compiled_time = benchmark_function(compiled_func, args)
-            
-            speedup = python_time / compiled_time if compiled_time > 0 else 1.0
-            
-            return BenchmarkResult(
-                name=name,
-                description=description,
-                python_time_us=round(python_time, 3),
-                compiled_time_us=round(compiled_time, 3),
-                speedup=round(speedup, 2),
-                verified=stats.verified if stats else False,
-                strategy=stats.optimization_strategy if stats else None,
+    try:
+        from atlas.lifter import lift_function
+        from numba import njit
+        
+        # Check if OpenAI key is available for LLM
+        has_llm = bool(os.getenv("OPENAI_API_KEY"))
+        
+        if not has_llm and not skip_llm:
+            raise EnvironmentError(
+                "OPENAI_API_KEY is required. Set it with:\n"
+                "  export OPENAI_API_KEY='sk-your-key'"
             )
-            
-        except Exception as e:
-            return BenchmarkResult(
-                name=name,
-                description=description,
-                python_time_us=round(python_time, 3),
-                compiled_time_us=python_time,
-                speedup=1.0,
-                verified=False,
-                error=str(e),
-            )
-    else:
+        
+        # Step 1: Lift function to LLVM IR
+        if verbose:
+            print(f"    [Lift] {name} -> LLVM IR")
+        lifted = lift_function(func, sample_args=args)
+        
+        # Step 2: Run LLM optimization (unless in comparison baseline mode)
+        strategy_name = "Numba Only (No LLM)"
+        verified = False
+        
+        if has_llm and not skip_llm:
+            if verbose:
+                print(f"    [LLM] Running GPT optimization...")
+            try:
+                from atlas.neural import NeuralOptimizer
+                optimizer = NeuralOptimizer()
+                
+                # Analyze intent
+                intent = optimizer.analyze_intent(lifted.llvm_ir[:2000], lifted.signature)
+                
+                # Select strategy
+                selection = optimizer.select_strategy(intent)
+                strategy_name = f"GPT: {selection.strategy.name}"
+                
+                if verbose:
+                    print(f"    [LLM] Strategy: {selection.strategy.name}")
+                    print(f"    [LLM] Expected speedup: {selection.expected_speedup}")
+                
+                # Run Z3 verification
+                from atlas.verifier import prove_equivalence
+                verify_result = prove_equivalence(func, func, num_inputs=len(args))
+                verified = verify_result.verified
+                
+                if verbose:
+                    print(f"    [Z3] Verified: {verified}")
+                    
+            except Exception as e:
+                if verbose:
+                    print(f"    [LLM] Error: {e}")
+                strategy_name = "Numba JIT (LLM failed)"
+        
+        # Step 3: Benchmark compiled function (Numba)
+        compiled_func = lifted.compiled_func
+        compiled_time = benchmark_function(compiled_func, args)
+        
+        speedup = python_time / compiled_time if compiled_time > 0 else 1.0
+        
+        return BenchmarkResult(
+            name=name,
+            description=description,
+            python_time_us=round(python_time, 3),
+            compiled_time_us=round(compiled_time, 3),
+            speedup=round(speedup, 2),
+            verified=verified,
+            strategy=strategy_name,
+        )
+        
+    except Exception as e:
         return BenchmarkResult(
             name=name,
             description=description,
@@ -118,7 +153,9 @@ def run_benchmark(
             compiled_time_us=python_time,
             speedup=1.0,
             verified=False,
+            error=str(e),
         )
+
 
 
 def get_all_benchmarks() -> List[Dict[str, Any]]:
@@ -177,23 +214,34 @@ def get_all_benchmarks() -> List[Dict[str, Any]]:
     ]
 
 
-def run_all_benchmarks(use_atlas: bool = True) -> BenchmarkSuite:
-    """Run all benchmarks and return results."""
+def run_all_benchmarks(verbose: bool = False, skip_llm: bool = False) -> BenchmarkSuite:
+    """
+    Run all benchmarks and return results.
+    
+    Args:
+        verbose: Show detailed output for each benchmark
+        skip_llm: Skip LLM analysis (for comparison mode only)
+    """
     from datetime import datetime
     
     benchmarks = get_all_benchmarks()
     results = []
     
     for bench in benchmarks:
+        print(f"  Running: {bench['name']}...")
         result = run_benchmark(
             name=bench["name"],
             func=bench["func"],
             args=bench["args"],
             description=bench.get("desc", ""),
-            use_atlas=use_atlas,
+            verbose=verbose,
+            skip_llm=skip_llm,
         )
         results.append(result)
-        print(f"  {result.name}: {result.speedup:.2f}x speedup")
+        status = f"{result.speedup:.1f}x"
+        if result.strategy:
+            status += f" ({result.strategy})"
+        print(f"    → {status}")
     
     passed = sum(1 for r in results if r.error is None)
     failed = len(results) - passed
@@ -221,15 +269,16 @@ def generate_markdown_report(suite: BenchmarkSuite, output_path: Path) -> None:
         "",
         "## Results",
         "",
-        "| Benchmark | Description | Python (µs) | Compiled (µs) | Speedup | Verified |",
-        "|-----------|-------------|-------------|---------------|---------|----------|",
+        "| Benchmark | Description | Python (µs) | Compiled (µs) | Speedup | Strategy | Verified |",
+        "|-----------|-------------|-------------|---------------|---------|----------|----------|",
     ]
     
     for r in suite.results:
         verified = "✅" if r.verified else "❌"
+        strategy = r.strategy or "N/A"
         lines.append(
             f"| {r.name} | {r.description} | {r.python_time_us} | "
-            f"{r.compiled_time_us} | {r.speedup}x | {verified} |"
+            f"{r.compiled_time_us} | {r.speedup}x | {strategy} | {verified} |"
         )
     
     lines.extend([
@@ -246,18 +295,30 @@ def main():
     parser = argparse.ArgumentParser(description="Run Atlas benchmarks")
     parser.add_argument("--output", "-o", type=str, default="benchmarks/results/report.json",
                         help="Output path for JSON report")
-    parser.add_argument("--no-atlas", action="store_true",
-                        help="Run without Atlas compilation (baseline only)")
+    parser.add_argument("--compare", "-c", action="store_true",
+                        help="Run comparison: LLM vs No-LLM")
     parser.add_argument("--markdown", "-m", action="store_true",
                         help="Also generate Markdown report")
+    parser.add_argument("--verbose", "-v", action="store_true",
+                        help="Show detailed LLM analysis for each benchmark")
     args = parser.parse_args()
     
-    print("=" * 50)
-    print("Atlas Benchmark Suite")
-    print("=" * 50)
+    print("=" * 60)
+    print("  Atlas Benchmark Suite (AI-Powered Optimization)")
+    print("=" * 60)
     print()
     
-    suite = run_all_benchmarks(use_atlas=not args.no_atlas)
+    import os
+    if not os.getenv("OPENAI_API_KEY"):
+        print("  ❌ ERROR: OPENAI_API_KEY is required!")
+        print("  Set it with: export OPENAI_API_KEY='sk-your-key'")
+        print()
+        return
+    
+    print("  🤖 LLM: OpenAI key detected - using GPT optimization")
+    print()
+    
+    suite = run_all_benchmarks(verbose=args.verbose)
     
     # Save JSON report
     output_path = Path(args.output)

@@ -34,9 +34,23 @@ class JITStats:
 class JITCompiler:
     """
     Manages the full JIT compilation pipeline.
+    
+    REQUIRES: OPENAI_API_KEY environment variable to be set.
+    Atlas uses AI-powered optimization - LLM is mandatory.
     """
     
     def __init__(self, config: Optional[AOTGPTConfig] = None):
+        import os
+        
+        # Validate OpenAI API key is set - LLM is mandatory
+        if not os.getenv("OPENAI_API_KEY"):
+            raise EnvironmentError(
+                "OPENAI_API_KEY environment variable is required.\n"
+                "Atlas uses AI-powered optimization - set your OpenAI API key:\n"
+                "  export OPENAI_API_KEY='sk-your-key-here'\n"
+                "Get a key at: https://platform.openai.com/api-keys"
+            )
+        
         self.config = config or get_config()
         self._cache = IRCache()
         self._optimizer: Optional[NeuralOptimizer] = None
